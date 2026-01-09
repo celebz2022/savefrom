@@ -9,15 +9,29 @@
 <body>
     <div class="container">
         <h1>Instagram & Social Media Downloader</h1>
-        <form action="/download" method="get">
+        <form id="downloadForm" action="/download" method="get">
             <input type="text" name="url" placeholder="Enter video URL" required>
             <button type="submit">Download Video</button>
         </form>
-
-        <button class="affiliate-btn" 
-            onclick="window.open('https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21','_blank','width=600,height=800')">
-            Buy on Amazon
-        </button>
     </div>
+
+    <script>
+        const form = document.getElementById('downloadForm');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const url = form.url.value;
+
+            // Open affiliate popup
+            window.open(
+                "https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21",
+                "_blank",
+                "width=600,height=800"
+            );
+
+            // Start video download
+            window.location.href = "/download?url=" + encodeURIComponent(url);
+        });
+    </script>
 </body>
 </html>
