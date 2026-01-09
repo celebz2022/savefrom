@@ -14,7 +14,6 @@ body {
     padding: 40px 30px;
     border-radius: 14px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-    transition: all 0.3s ease;
 }
 
 h2 {
@@ -33,13 +32,6 @@ input[type=text] {
     border: 1px solid #dcdcdc;
     border-radius: 8px;
     box-sizing: border-box;
-    transition: all 0.2s ease;
-}
-
-input[type=text]:focus {
-    outline: none;
-    border-color: #ffce00;
-    box-shadow: 0 0 5px rgba(255, 206, 0, 0.5);
 }
 
 button {
@@ -51,12 +43,11 @@ button {
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.2s ease;
+    transition: background 0.3s ease;
 }
 
 button:hover {
     background-color: #ffb900;
-    transform: translateY(-2px);
 }
 
 footer {
