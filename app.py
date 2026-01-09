@@ -7,15 +7,16 @@ app = Flask(__name__)
 # Serve the frontend
 @app.route("/")
 def index():
-    return send_from_directory('.', 'index.html')  # '.' is your current folder
+    return send_from_directory('.', 'index.html')  # '.' is your project folder
 
-# API endpoint
+# API endpoint to get Instagram video URL
 @app.route("/download", methods=["POST"])
 def download():
     url = request.json.get("url")
     if not url:
         return jsonify({"error": "No URL provided"}), 400
 
+    # yt-dlp options: don't download, just extract info
     ydl_opts = {"quiet": True, "skip_download": True}
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         try:
@@ -28,6 +29,7 @@ def download():
         "download_url": info.get("url")
     })
 
+# Run the app using the PORT provided by Render (or default 5000 locally)
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
