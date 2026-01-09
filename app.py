@@ -4,6 +4,7 @@ import os
 
 app = Flask(__name__)
 
+# Folder to store downloaded videos
 DOWNLOAD_FOLDER = "downloads"
 os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
 
