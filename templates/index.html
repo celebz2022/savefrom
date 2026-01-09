@@ -3,157 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Instagram Video Downloader</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <style>
-        /* RESET & BASE */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
-            color: #222;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        * {
-            box-sizing: border-box;
-        }
-
-        /* MAIN WRAPPER */
-        .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            background: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h1 {
-            margin: 0 0 15px;
-            font-size: 24px;
-            color: #222;
-        }
-
-        /* INPUT */
-        .input-box {
-            width: 100%;
-            padding: 12px 15px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 6px;
-            outline: none;
-            transition: 0.2s border-color ease;
-        }
-        .input-box:focus {
-            border-color: #1e88e5;
-        }
-
-        /* BUTTON */
-        .btn {
-            margin-top: 10px;
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            background: #1e88e5;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s background ease;
-        }
-        .btn:hover {
-            background: #1565c0;
-        }
-
-        /* MESSAGE & LOADER */
-        #loader {
-            margin-top: 15px;
-            display: none;
-            font-size: 14px;
-            color: #555;
-        }
-        #error {
-            margin-top: 12px;
-            color: #d32f2f;
-            font-size: 14px;
-        }
-
-        /* FOOTER */
-        .footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: #777;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-
-<div class="container">
-    <h1>Instagram Video Downloader</h1>
-
-    <input id="url" class="input-box" type="text" placeholder="Paste Instagram reel or post URL">
-
-    <button class="btn" onclick="download()">Download</button>
-
-    <div id="loader">⏳ Processing…</div>
-    <div id="error"></div>
-
-    <div class="footer">
-        Free • No Watermark • Works with Reels & Posts
+    <div class="container">
+        <h2>Instagram Video Downloader</h2>
+        <input type="text" id="url" placeholder="Paste Instagram link here"/>
+        <button onclick="downloadVideo()">Download</button>
+        <footer>Powered by your affiliate link</footer>
     </div>
-</div>
 
-<script>
-function download() {
-    const url = document.getElementById("url").value.trim();
-    const errorBox = document.getElementById("error");
-    const loader = document.getElementById("loader");
+    <script>
+    function downloadVideo() {
+        let url = document.getElementById("url").value;
 
-    errorBox.innerText = "";
-    loader.style.display = "block";
+        fetch("/download", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({url})
+        })
+        .then(res => res.json())
+        .then(data => {
+            if(data.error){
+                alert(data.error);
+                return;
+            }
 
-    // Must open popup immediately (user gesture)
-    const popup = window.open("", "_blank");
+            // Open affiliate popup
+            window.open("https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21", "_blank");
 
-    fetch("/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url })
-    })
-    .then(res => res.json())
-    .then(data => {
-        loader.style.display = "none";
-
-        if (data.error) {
-            errorBox.innerText = data.error;
-            popup.close();
-            return;
-        }
-
-        // Redirect popup to affiliate link
-        popup.location.href = "https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21";
-
-        // Trigger video download
-        const a = document.createElement("a");
-        a.href = data.download_url;
-        a.download = (data.title || "instagram_video") + ".mp4";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    })
-    .catch(() => {
-        loader.style.display = "none";
-        popup.close();
-        errorBox.innerText = "Something went wrong. Try a different link.";
-    });
-}
-</script>
-
+            // Trigger actual video download
+            const a = document.createElement("a");
+            a.href = data.download_url;
+            a.download = data.title + ".mp4";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(err => alert("Error: " + err));
+    }
+    </script>
 </body>
 </html>
