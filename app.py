@@ -1,5 +1,5 @@
-from flask import Flask, request, jsonify, render_template
-import yt_dlp
+from flask import Flask, render_template, request, send_file
+import requests
 import os
 
 app = Flask(__name__)
@@ -8,33 +8,31 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-@app.route("/download", methods=["POST"])
-def download():
-    url = request.json.get("url")
-    if not url:
-        return jsonify({"error": "No URL provided"}), 400
+@app.route("/download_video", methods=["POST"])
+def download_video():
+    video_url = request.form.get("url")
+    if not video_url:
+        return "No video URL provided", 400
 
-    # yt-dlp options: get direct video URL
-    ydl_opts = {
-        "quiet": True,
-        "format": "mp4",
-        "skip_download": True,
-        "noplaylist": True
-    }
-
+    # Download the video to a temporary file
     try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            info = ydl.extract_info(url, download=False)
-            # Get the best video URL (mp4)
-            video_url = info.get("url")
-            title = info.get("title") or "video"
+        r = requests.get(video_url, stream=True)
+        filename = "video.mp4"
+        with open(filename, "wb") as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    f.write(chunk)
     except Exception as e:
-        return jsonify({"error": "Video not available. Make sure the link is public and valid."}), 400
+        return f"Error downloading video: {e}", 500
 
-    return jsonify({
-        "title": title,
-        "download_url": video_url
-    })
+    # Send the file to user as attachment (download)
+    response = send_file(filename, as_attachment=True)
+    
+    # Remove temporary file after sending
+    if os.path.exists(filename):
+        os.remove(filename)
+
+    return response
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
