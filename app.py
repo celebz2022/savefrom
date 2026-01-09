@@ -4,14 +4,12 @@ import os
 
 app = Flask(__name__)
 
-# Only the affiliate tag
-AFFILIATE_ID = os.environ.get("HEALTH_AFFILIATE_ID", "healthhackzon-21")
+# Your exact Amazon affiliate link
+AFFILIATE_LINK = "https://www.amazon.com/?tag=healthhackzon-21"
 
 @app.route("/")
 def index():
-    # Amazon link with your affiliate tag
-    affiliate_link = f"https://www.amazon.com/?tag={AFFILIATE_ID}"
-    return render_template("index.html", affiliate_link=affiliate_link)
+    return render_template("index.html", affiliate_link=AFFILIATE_LINK)
 
 @app.route("/download", methods=["POST"])
 def download():
@@ -27,7 +25,7 @@ def download():
             video_url = info.get("url")
             title = info.get("title")
             if not video_url:
-                raise Exception("Video URL not found")
+                raise Exception("No video URL found")
     except Exception:
         return jsonify({
             "error": "Video not available. Make sure the link is public and valid."
