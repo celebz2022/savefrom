@@ -1,25 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Instagram & Social Media Downloader</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h2>Instagram & Social Media Downloader</h2>
-        <form id="download-form" method="POST" action="/download_video" target="_blank">
-            <input type="text" name="url" placeholder="Paste video URL here" required>
-            <button type="submit" onclick="openAffiliate()">Download</button>
-        </form>
-        <footer>Powered by your affiliate link</footer>
-    </div>
+from flask import Flask, render_template, request, send_file
+import yt_dlp
+import os
 
-    <script>
-    function openAffiliate() {
-        // Open Amazon affiliate link in new tab
-        window.open("https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21", "_blank");
+app = Flask(__name__)
+
+DOWNLOAD_FOLDER = "downloads"
+os.makedirs(DOWNLOAD_FOLDER, exist_ok=True)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
+
+@app.route("/download", methods=["POST"])
+def download_video():
+    url = request.form.get("url")
+    if not url:
+        return "No URL provided", 400
+
+    output_path = os.path.join(DOWNLOAD_FOLDER, "%(title)s.%(ext)s")
+    opts = {
+        "outtmpl": output_path,
+        "quiet": True,
     }
-    </script>
-</body>
-</html>
+
+    try:
+        with yt_dlp.YoutubeDL(opts) as ydl:
+            info = ydl.extract_info(url, download=True)
+            filename = ydl.prepare_filename(info)
+        return send_file(filename, as_attachment=True)
+    except Exception as e:
+        return f"Error downloading video: {str(e)}", 500
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
