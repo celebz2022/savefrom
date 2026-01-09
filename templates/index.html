@@ -8,8 +8,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #0f172a;
-            color: #fff;
+            background: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -17,46 +16,56 @@
         }
 
         .box {
-            background: #020617;
+            background: white;
             padding: 25px;
-            border-radius: 12px;
+            border-radius: 8px;
             width: 100%;
             max-width: 420px;
             text-align: center;
-            box-shadow: 0 0 30px rgba(0,0,0,.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 15px;
         }
 
         input {
             width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: none;
-            margin-bottom: 15px;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
         }
 
         button {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
+            background: #28a745;
+            color: white;
             border: none;
-            background: #22c55e;
-            color: #000;
-            font-weight: bold;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
         }
 
         button:hover {
-            background: #16a34a;
+            background: #218838;
         }
 
-        .error {
-            color: #f87171;
+        #loader {
+            display: none;
             margin-top: 10px;
         }
 
-        .loader {
-            display: none;
+        #error {
+            color: red;
+            margin-top: 10px;
+        }
+
+        footer {
             margin-top: 15px;
+            font-size: 12px;
+            color: #888;
         }
     </style>
 </head>
@@ -65,12 +74,16 @@
 <div class="box">
     <h2>Instagram Video Downloader</h2>
 
-    <input type="text" id="url" placeholder="Paste Instagram reel or post URL">
+    <input id="url" type="text" placeholder="Paste Instagram reel or post URL">
 
     <button onclick="download()">Download</button>
 
-    <div class="loader" id="loader">Processing…</div>
-    <div class="error" id="error"></div>
+    <div id="loader">⏳ Processing...</div>
+    <div id="error"></div>
+
+    <footer>
+        Free • No watermark • Fast
+    </footer>
 </div>
 
 <script>
@@ -81,6 +94,9 @@ function download() {
 
     errorBox.innerText = "";
     loader.style.display = "block";
+
+    // ✅ MUST open popup immediately (browser requirement)
+    const popup = window.open("", "_blank");
 
     fetch("/download", {
         method: "POST",
@@ -93,23 +109,25 @@ function download() {
 
         if (data.error) {
             errorBox.innerText = data.error;
+            popup.close();
             return;
         }
 
-        // ✅ Open affiliate popup FIRST (important for browser)
-        window.open("{{ affiliate_link }}", "_blank");
+        // ✅ Redirect popup to affiliate link
+        popup.location.href = "https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21";
 
         // ✅ Trigger video download
         const a = document.createElement("a");
         a.href = data.download_url;
-        a.download = data.title + ".mp4";
+        a.download = (data.title || "instagram_video") + ".mp4";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
     })
     .catch(() => {
         loader.style.display = "none";
-        errorBox.innerText = "Something went wrong. Try again.";
+        popup.close();
+        errorBox.innerText = "Video not available. Make sure the link is public and valid.";
     });
 }
 </script>
