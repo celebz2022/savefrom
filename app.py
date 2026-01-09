@@ -4,36 +4,35 @@ import os
 
 app = Flask(__name__)
 
-# Your exact Amazon affiliate link
-AFFILIATE_LINK = "https://www.amazon.com/?tag=healthhackzon-21"
-
+# Serve frontend
 @app.route("/")
 def index():
-    return render_template("index.html", affiliate_link=AFFILIATE_LINK)
+    return render_template("index.html")
 
+# API endpoint to get Instagram video URL
 @app.route("/download", methods=["POST"])
 def download():
     url = request.json.get("url")
     if not url:
         return jsonify({"error": "No URL provided"}), 400
 
-    ydl_opts = {"quiet": True, "skip_download": True}
+    ydl_opts = {
+        "quiet": True,
+        "skip_download": True,
+        # Optional: Login if needed (for private posts)
+        # "username": os.environ.get("INSTA_USER"),
+        # "password": os.environ.get("INSTA_PASS")
+    }
 
-    try:
-        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        try:
             info = ydl.extract_info(url, download=False)
-            video_url = info.get("url")
-            title = info.get("title")
-            if not video_url:
-                raise Exception("No video URL found")
-    except Exception:
-        return jsonify({
-            "error": "Video not available. Make sure the link is public and valid."
-        }), 400
+        except Exception as e:
+            return jsonify({"error": f"Video not available. {str(e)}"}), 400
 
     return jsonify({
-        "title": title,
-        "download_url": video_url
+        "title": info.get("title"),
+        "download_url": info.get("url")
     })
 
 if __name__ == "__main__":
