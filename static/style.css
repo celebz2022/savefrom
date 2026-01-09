@@ -1,23 +1,54 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Instagram & Social Media Downloader</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-</head>
-<body>
-    <div class="container">
-        <h1>Instagram & Social Media Downloader</h1>
-        <form action="/download" method="get">
-            <input type="text" name="url" placeholder="Enter video URL" required>
-            <button type="submit">Download Video</button>
-        </form>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
 
-        <button class="affiliate-btn" 
-            onclick="window.open('https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21','_blank','width=600,height=800')">
-            Buy on Amazon
-        </button>
-    </div>
-</body>
-</html>
+.container {
+    background: #fff;
+    padding: 40px 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+
+h1 {
+    color: #ff0000;
+    margin-bottom: 30px;
+    font-size: 22px;
+}
+
+input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+button {
+    background-color: #ff0000;
+    color: #fff;
+    border: none;
+    padding: 12px 25px;
+    font-size: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #e60000;
+}
+
+.affiliate-btn {
+    margin-top: 20px;
+    width: 100%;
+}
