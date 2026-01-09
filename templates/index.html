@@ -1,46 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Instagram Video Downloader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #0f172a;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .box {
+            background: #020617;
+            padding: 25px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0,0,0,.5);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #22c55e;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        .error {
+            color: #f87171;
+            margin-top: 10px;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 15px;
+        }
+    </style>
 </head>
 <body>
+
+<div class="box">
     <h2>Instagram Video Downloader</h2>
-    <input type="text" id="url" placeholder="Paste Instagram link here" size="50"/>
-    <button onclick="downloadVideo()">Download</button>
 
-    <script>
-        function downloadVideo() {
-            let url = document.getElementById("url").value;
-            if(!url) {
-                alert("Please enter a link!");
-                return;
-            }
+    <input type="text" id="url" placeholder="Paste Instagram reel or post URL">
 
-            fetch("/download", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({url})
-            })
-            .then(res => res.json())
-            .then(data => {
-                if(data.error){
-                    alert("Error: " + data.error);
-                    return;
-                }
+    <button onclick="download()">Download</button>
 
-                // Open Amazon affiliate link in new tab
-                window.open("https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21", "_blank");
+    <div class="loader" id="loader">Processing…</div>
+    <div class="error" id="error"></div>
+</div>
 
-                // Trigger video download
-                const a = document.createElement("a");
-                a.href = data.download_url;
-                a.download = "InstagramVideo.mp4";
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-            })
-            .catch(err => alert("Error: " + err));
+<script>
+function download() {
+    const url = document.getElementById("url").value;
+    const errorBox = document.getElementById("error");
+    const loader = document.getElementById("loader");
+
+    errorBox.innerText = "";
+    loader.style.display = "block";
+
+    fetch("/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url })
+    })
+    .then(res => res.json())
+    .then(data => {
+        loader.style.display = "none";
+
+        if (data.error) {
+            errorBox.innerText = data.error;
+            return;
         }
-    </script>
+
+        // ✅ Open affiliate popup FIRST (important for browser)
+        window.open("{{ affiliate_link }}", "_blank");
+
+        // ✅ Trigger video download
+        const a = document.createElement("a");
+        a.href = data.download_url;
+        a.download = data.title + ".mp4";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    })
+    .catch(() => {
+        loader.style.display = "none";
+        errorBox.innerText = "Something went wrong. Try again.";
+    });
+}
+</script>
+
 </body>
 </html>
