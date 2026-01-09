@@ -9,6 +9,8 @@
 <button onclick="downloadVideo()">Download</button>
 
 <script>
+const affiliateLink = "{{ affiliate_link }}"; // passed from Flask
+
 function downloadVideo() {
     let url = document.getElementById("url").value;
 
@@ -24,10 +26,10 @@ function downloadVideo() {
             return;
         }
 
-        // Open your Amazon affiliate link
-        window.open("https://www.amazon.com/?tag=healthhackzon-21", "_blank");
+        // Open Amazon affiliate link in new tab
+        window.open(affiliateLink, "_blank");
 
-        // Trigger actual video download
+        // Trigger video download
         const a = document.createElement("a");
         a.href = data.download_url;
         a.download = data.title + ".mp4";
@@ -39,5 +41,3 @@ function downloadVideo() {
 </script>
 </body>
 </html>
-
-
