@@ -17,6 +17,11 @@ function downloadVideo() {
     document.getElementById("message").innerText = "";
     let url = document.getElementById("url").value;
 
+    if (!url) {
+        document.getElementById("message").innerText = "Please enter a URL";
+        return;
+    }
+
     fetch("/download", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -24,21 +29,29 @@ function downloadVideo() {
     })
     .then(res => res.json())
     .then(data => {
-        if(data.error){
+        if (data.error) {
             document.getElementById("message").innerText = data.error;
             return;
         }
 
-        // Open Amazon affiliate link in new tab
-        window.open(affiliateLink, "_blank");
+        // Open Amazon affiliate link first
+        const win = window.open(affiliateLink, "_blank");
+        if (!win) {
+            alert("Please allow popups to open the affiliate link.");
+        }
 
-        // Trigger video download
-        const a = document.createElement("a");
-        a.href = data.download_url;
-        a.download = data.title + ".mp4";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        // Trigger download after short delay to ensure popup opens
+        setTimeout(() => {
+            const a = document.createElement("a");
+            a.href = data.download_url;
+            a.download = data.title + ".mp4";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }, 500);
+    })
+    .catch(err => {
+        document.getElementById("message").innerText = "Error fetching video. Try again.";
     });
 }
 </script>
