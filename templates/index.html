@@ -7,18 +7,11 @@
 </head>
 <body>
     <div class="container">
-        <h2>Instagram & Social Media Downloader</h2>
-        <form id="download-form" method="POST" action="/download_video" target="_blank">
-            <input type="text" name="url" placeholder="Paste Instagram or video URL here" required>
-            <button type="submit" onclick="openAffiliate()">Download</button>
+        <h1>Instagram & Social Media Downloader</h1>
+        <form action="/download" method="POST">
+            <input type="text" name="url" placeholder="Enter video URL" required>
+            <button type="submit">Download</button>
         </form>
-        <footer>Powered by Amazon Affiliate</footer>
     </div>
-
-    <script>
-        function openAffiliate() {
-            window.open("https://www.amazon.ae/dp/B07DX89ZHN?tag=healthhackzon-21", "_blank");
-        }
-    </script>
 </body>
 </html>
